@@ -31,13 +31,13 @@ RSpec.describe 'Merchant Item Edit Page', type: :feature do
 
     context 'submit valid data' do
       before(:each) do
-        fill_in 'Name', with: 'New Item Name'
+        fill_in 'Name', with: 'Dog'
         click_button 'Update Item'
       end
 
       it 'updates the item and redirects to the item show page' do
         expect(current_path).to eq(merchant_item_path(@merchant_1.id, @item_1))
-        expect(page).to have_content('New Item Name')
+        expect(page).to have_content('Dog')
       end
 
       it 'displays a flash message for a successful item update' do

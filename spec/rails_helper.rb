@@ -9,12 +9,16 @@ end
 require './app/helpers/application_helper'
 include ApplicationHelper
 
+require './spec/fixtures/mock_responses'
+include MockResponses
+
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../config/environment', __dir__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
+require 'webmock/rspec'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -42,6 +46,29 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 
 RSpec.configure do |config|
+  config.before(:each) do
+    api_key = Rails.application.config.unsplash_api_key
+
+    stub_request(:get, "https://api.unsplash.com/photos/qMehmIyaXvY/?client_id=#{api_key}").with(
+      headers: {
+        'Accept'=>'*/*',
+        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'User-Agent'=>'Ruby'
+      })
+    .to_return(status: 200, body: LOGO_PHOTO_RESPONSE.to_json)
+
+    stub_request(:get, "https://api.unsplash.com/photos/random/?client_id=#{api_key}").to_return(status: 200, body: RANDOM_PHOTO_RESPONSE.to_json)
+
+    search_term = "Dog"
+    stub_request(:get, "https://api.unsplash.com/search/photos?client_id=#{api_key}&page=1&query=#{search_term}").to_return(status: 200, body: SEARCH_PHOTO_RESPONSE.to_json)
+
+    search_term = "Assumenda%20Animi"
+    stub_request(:get, "https://api.unsplash.com/search/photos?page=1&query=#{search_term}&client_id=#{api_key}")
+    .to_return(status: 200, body: SEARCH_NOT_FOUND_RESPONSE.to_json)
+
+    stub_request(:get, "https://api.unsplash.com/photos/Hl_o1K6OPsA/?client_id=#{api_key}").to_return(status: 200, body: ERROR_PHOTO_RESPONSE.to_json)
+  end
+
   config.include FactoryBot::Syntax::Methods
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures

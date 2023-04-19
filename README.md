@@ -88,6 +88,8 @@ Additionally, this application is connected to the [Unsplash API](https://unspla
 
 More information on the User Stories that guide this functionality can be found [here](https://github.com/turingschool-examples/little-esty-shop/blob/main/doc/user_stories.md).
 
+We are also using the WebMock Ruby gem to mock our Unsplash API requests to prevent the number of our API requests from hitting their maximmum limit and throttliing our API key. Also, it reduced the execution time for our test from 45 seconds to 8.5 seconds.
+
 ### Looking Ahead
 
 Potential contributors to this application may want to address any of the following:
