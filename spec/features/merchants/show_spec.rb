@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Merchant Dashboard Page', type: :feature do
   before(:each) do
     @merchant_1 = create(:merchant)
+    @merchant_2 = create(:merchant)
 
     @item_1 = create(:item, merchant_id: @merchant_1.id, is_enabled: true)
     @item_2 = create(:item, merchant_id: @merchant_1.id, is_enabled: true)
@@ -156,5 +157,19 @@ RSpec.describe 'Merchant Dashboard Page', type: :feature do
     expect(@item_3.name).to appear_before(@item_4.name)
     expect(@item_4.name).to appear_before(@item_2.name)
     expect(@item_2.name).to appear_before(@item_1.name)
+  end
+
+  it 'should show a random photo by the merchant name (API 39)' do
+    within "#photo" do
+      expect(page).to have_css("img")
+    end
+  end
+
+  it 'shows random photos for multiple merchants' do
+    visit merchant_dashboard_path(@merchant_2.id)
+
+    within "#photo" do
+      expect(page).to have_css("img")
+    end
   end
 end

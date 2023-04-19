@@ -2,6 +2,11 @@
 
 <h3><%= @merchant.name %></h3>
 
+<div id="photo">
+  <img src=<%= @random_photo.thumb_url %>></img>
+</div>
+
+  <binding.pry>
 <h3><%= link_to "Items Index", merchant_items_path(@merchant.id) %></h3>
 <h3><%= link_to "Invoices Index", merchant_invoices_path(@merchant.id) %></h3>
 
