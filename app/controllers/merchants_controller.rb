@@ -5,6 +5,7 @@ class MerchantsController < ApplicationController
 
   def show
     @merchant = Merchant.find(params[:merchant_id])
+    @random_photo = PhotoSearch.new.random_photo
   end
 
   def update
