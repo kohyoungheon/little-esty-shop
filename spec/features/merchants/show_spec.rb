@@ -58,6 +58,10 @@ RSpec.describe 'Merchant Dashboard Page', type: :feature do
     @invoice_item_6 = create(:invoice_item, item_id: @item_5.id, invoice_id: @invoice_6.id, status: 2)
     @invoice_item_7 = create(:invoice_item, item_id: @item_5.id, invoice_id: @invoice_7.id, status: 2)
 
+    @bulk_discount_1 = @merchant_1.bulk_discounts.create!(name: "20% off 20 Items", quantity_threshold: 20, percentage_discount: 20.0)
+    @bulk_discount_2 = @merchant_1.bulk_discounts.create!(name: "10% off 10 Items", quantity_threshold: 10, percentage_discount: 10.0)
+    @bulk_discount_3 = @merchant_2.bulk_discounts.create!(name: "5% off 5 Items", quantity_threshold: 50, percentage_discount: 5.0)
+
     visit merchant_dashboard_path(@merchant_1.id)
   end
 
@@ -170,6 +174,54 @@ RSpec.describe 'Merchant Dashboard Page', type: :feature do
 
     within "#photo" do
       expect(page).to have_css("img")
+    end
+  end
+
+  describe "1: Merchant Bulk Discounts Index" do
+    it "displays a link to view all discounts" do
+      expect(page).to have_link("View all my discounts")
+      visit merchant_dashboard_path(@merchant_2.id)
+      expect(page).to have_link("View all my discounts")
+    end
+    it "link takes me to bulk discounts index page" do
+      click_link("View all my discounts")
+      expect(current_path).to eq(merchant_bulk_discounts_path(@merchant_1))
+
+      visit merchant_dashboard_path(@merchant_2.id)
+      click_link("View all my discounts")
+      expect(current_path).to eq(merchant_bulk_discounts_path(@merchant_2))
+    end
+    it "displays percentage and quantity attributes and a link to it's show page" do
+      click_link("View all my discounts")
+      within ("##{@bulk_discount_1.id}_discount") do
+        expect(page).to have_content("Name: #{@bulk_discount_1.name}")
+        expect(page).to have_content("Quantity Threshold: #{@bulk_discount_1.quantity_threshold}")
+        expect(page).to have_content("Percentage Discount: #{@bulk_discount_1.percentage_discount}")
+        
+        expect(page).to_not have_content("Name: #{@bulk_discount_3.name}")
+        expect(page).to_not have_content("Quantity Threshold: #{@bulk_discount_3.quantity_threshold}")
+        expect(page).to_not have_content("Percentage Discount: #{@bulk_discount_3.percentage_discount}")
+
+        expect(page).to have_link("(View Discount #{@bulk_discount_1.id})")
+        click_link("(View Discount #{@bulk_discount_1.id})")
+        expect(current_path).to eq(merchant_bulk_discount_path(@merchant_1, @bulk_discount_1))
+      end
+
+      visit merchant_dashboard_path(@merchant_2.id)
+      click_link("View all my discounts")
+      within ("##{@bulk_discount_3.id}_discount") do
+        expect(page).to have_content("Name: #{@bulk_discount_3.name}")
+        expect(page).to have_content("Quantity Threshold: #{@bulk_discount_3.quantity_threshold}")
+        expect(page).to have_content("Percentage Discount: #{@bulk_discount_3.percentage_discount}")
+
+        expect(page).to_not have_content("Name: #{@bulk_discount_1.name}")
+        expect(page).to_not have_content("Quantity Threshold: #{@bulk_discount_1.quantity_threshold}")
+        expect(page).to_not have_content("Percentage Discount: #{@bulk_discount_1.percentage_discount}")
+
+        expect(page).to have_link("(View Discount #{@bulk_discount_3.id})")
+        click_link("(View Discount #{@bulk_discount_3.id})")
+        expect(current_path).to eq(merchant_bulk_discount_path(@merchant_2, @bulk_discount_3))
+      end
     end
   end
 end
