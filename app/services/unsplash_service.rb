@@ -2,7 +2,7 @@ require 'httparty'
 require './app/poros/photo'
 
 class UnsplashService
-  @@api_key = Rails.application.config.unsplash_api_key
+  @@api_key = "9SoHvRXOatpP6iSa0fNaHldL3_Ei7u6DoxGv0Saw5-w"
 
   def get_logo
     get_url("https://api.unsplash.com/photos/qMehmIyaXvY/?client_id=#{@@api_key}")

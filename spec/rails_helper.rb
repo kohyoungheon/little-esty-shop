@@ -47,7 +47,7 @@ end
 
 RSpec.configure do |config|
   config.before(:each) do
-    api_key = Rails.application.config.unsplash_api_key
+    api_key = "9SoHvRXOatpP6iSa0fNaHldL3_Ei7u6DoxGv0Saw5-w"
 
     stub_request(:get, "https://api.unsplash.com/photos/qMehmIyaXvY/?client_id=#{api_key}").with(
       headers: {
