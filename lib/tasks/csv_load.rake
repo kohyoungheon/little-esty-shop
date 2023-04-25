@@ -12,6 +12,18 @@ namespace :csv_load do
     ActiveRecord::Base.connection.reset_pk_sequence!(:customers)
   end
 
+  desc "imports bulk discount from CSV and creates Bulk_Discount objects"
+  task bulk_discounts: :environment do
+    Bulk_Discount.destroy_all
+    file = "db/data/bulk_discount.csv"
+    CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+      details = row.to_hash
+      details[:result] = convert_transaction_result(details[:result])
+      Bulk_Discount.create!(details)
+    end
+    ActiveRecord::Base.connection.reset_pk_sequence!(:bulk_discount)
+  end
+
   desc "imports merchant data from CSV and creates Merchant objects"
   task merchants: :environment do
     Merchant.destroy_all
@@ -71,6 +83,8 @@ namespace :csv_load do
     ActiveRecord::Base.connection.reset_pk_sequence!(:transactions)
   end
 
+
+
   desc "imports all of the CSVs and creates records for all six tables"
   task all: :environment do
     Rake::Task["csv_load:customers"].execute
@@ -79,6 +93,7 @@ namespace :csv_load do
     Rake::Task["csv_load:invoices"].execute
     Rake::Task["csv_load:invoice_items"].execute
     Rake::Task["csv_load:transactions"].execute
+    Rake::Task["csv_load:bulk_discounts"].execute
   end
 end
 
