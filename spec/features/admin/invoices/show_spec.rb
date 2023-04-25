@@ -15,6 +15,8 @@ RSpec.describe 'Admin Invoices Index Page', type: :feature do
     @invoice_item_2 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 100, unit_price: 100)
     @invoice_item_3 = create(:invoice_item, invoice_id: @invoice_2.id, item_id: @item_1.id, quantity: 150, unit_price: 150)
     @invoice_item_4 = create(:invoice_item, invoice_id: @invoice_2.id, item_id: @item_3.id, quantity: 200, unit_price: 200)
+    @bulk_discount_2 = @merchant_1.bulk_discounts.create!(name: "10% off 10 Items", quantity_threshold: 10, percentage_discount: 10.0)
+
   end
 
   describe "Admin Invoice Show Page (User Story 33)" do
@@ -155,6 +157,21 @@ RSpec.describe 'Admin Invoices Index Page', type: :feature do
         click_button "Update Invoice Status"
         expect(@invoice_2.reload.status).to eq("In Progress")
         expect(current_path).to eq(admin_invoice_path(@invoice_2))
+      end
+    end
+  end
+
+  describe "8: Admin Invoice Show Page: Total Revenue and Discounted Revenue" do
+    it "displays total revenue and discounted revenue" do
+      visit admin_invoice_path(@invoice_1)
+      within ("##{@invoice_1.id}_id") do
+        expect(page).to have_content("Total Revenue: $125.00")
+        expect(page).to have_content("Total Discounted Revenue: $112.50")
+      end
+      visit admin_invoice_path(@invoice_2)
+      within ("##{@invoice_2.id}_id") do
+        expect(page).to have_content("Total Revenue: $625.00")
+        expect(page).to have_content("Total Discounted Revenue: $562.50")
       end
     end
   end

@@ -120,5 +120,98 @@ RSpec.describe Invoice, type: :model do
         expect(invoice_2.total_revenue).to eq(5600)
       end
     end
+
+    describe "#total_discounted_revenue" do
+      before (:each) do
+        @merchant_1 = create(:merchant)
+        @merchant_2 = create(:merchant)
+
+        @customer_1 = create(:customer)
+
+        @invoice_1 = create(:invoice, customer_id: @customer_1.id)
+        @invoice_2 = create(:invoice, customer_id: @customer_1.id)
+
+        @item_1 = create(:item, merchant_id: @merchant_1.id)
+        @item_2 = create(:item, merchant_id: @merchant_1.id)
+
+        @item_3 = create(:item, merchant_id: @merchant_2.id)
+        @item_3 = create(:item, merchant_id: @merchant_2.id)
+      end
+
+      it "no discounts if no quantity threshold are met" do
+        discount_1 = @merchant_1.bulk_discounts.create!(name:"10% off 10", quantity_threshold: 10, percentage_discount: 10.0)
+        discount_2 = @merchant_1.bulk_discounts.create!(name:"50% off 20", quantity_threshold: 20, percentage_discount: 50.0)
+
+        @invoice_item_1 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 100)
+        @invoice_item_2 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 9, unit_price: 100)
+
+        expect(@invoice_1.total_discounted_revenue(@merchant_1)).to eq(1800)
+      end
+
+      it "applies 2 different discounts separately and at differing amounts" do
+        @discount_1 = @merchant_1.bulk_discounts.create!(name:"10% off 10", quantity_threshold: 10, percentage_discount: 10.0)
+
+        @invoice_item_1 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 5, unit_price: 100)
+        @invoice_item_2 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 10, unit_price: 100)
+
+        expect(@invoice_1.total_discounted_revenue(@merchant_1)).to eq(1400)
+      end
+
+      it "can apply 2 discounts for the invoice from the same merchant" do
+        @discount_1 = @merchant_1.bulk_discounts.create!(name:"10% off 10", quantity_threshold: 10, percentage_discount: 10.0)
+        @discount_2 = @merchant_1.bulk_discounts.create!(name:"20% off 20", quantity_threshold: 20, percentage_discount: 20.0)
+
+        @invoice_item_1 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 10, unit_price: 100)
+        @invoice_item_2 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 20, unit_price: 100)
+
+        expect(@invoice_1.total_discounted_revenue(@merchant_1)).to eq(2700)
+      end
+
+      it "applies the highest discount for both items" do
+        @discount_1 = @merchant_1.bulk_discounts.create!(name:"10% off 10", quantity_threshold: 10, percentage_discount: 10.0)
+        @discount_2 = @merchant_1.bulk_discounts.create!(name:"20% off 20", quantity_threshold: 20, percentage_discount: 20.0)
+
+        @invoice_item_1 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 20, unit_price: 100)
+        @invoice_item_2 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 20, unit_price: 100)
+
+        expect(@invoice_1.total_discounted_revenue(@merchant_1)).to eq(3600)
+      end
+
+      it "doesnt apply discounts from other merchants" do
+        @discount_1 = @merchant_1.bulk_discounts.create!(name:"10% off 10", quantity_threshold: 10, percentage_discount: 10.0)
+        @discount_2 = @merchant_2.bulk_discounts.create!(name:"20% off 20", quantity_threshold: 20, percentage_discount: 20.0)
+
+        @invoice_item_1 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 20, unit_price: 100)
+        @invoice_item_2 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 20, unit_price: 100)
+
+        expect(@invoice_1.total_discounted_revenue(@merchant_1)).to eq(3600)
+      end
+    end
+
+    describe "#admin_discounted_revenue" do
+      it "returns the total discounted amount on an invoice regardless of merchant" do
+        @merchant_1 = create(:merchant)
+        @merchant_2 = create(:merchant)
+
+        @customer_1 = create(:customer)
+
+        @invoice_1 = create(:invoice, customer_id: @customer_1.id)
+        @invoice_2 = create(:invoice, customer_id: @customer_1.id)
+
+        @item_1 = create(:item, merchant_id: @merchant_1.id)
+        @item_2 = create(:item, merchant_id: @merchant_1.id)
+
+        @item_3 = create(:item, merchant_id: @merchant_2.id)
+        @item_3 = create(:item, merchant_id: @merchant_2.id)
+
+        discount_1 = @merchant_1.bulk_discounts.create!(name:"10% off 10", quantity_threshold: 10, percentage_discount: 10.0)
+        discount_2 = @merchant_1.bulk_discounts.create!(name:"50% off 20", quantity_threshold: 20, percentage_discount: 50.0)
+
+        @invoice_item_1 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 100)
+        @invoice_item_2 = create(:invoice_item, invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 9, unit_price: 100)
+
+        expect(@invoice_1.admin_discounted_revenue).to eq(1800)
+      end
+    end
   end
 end

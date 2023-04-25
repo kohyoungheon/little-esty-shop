@@ -5,6 +5,7 @@
   <p>Status: <%= @invoice.status %></p>
   <p>Created on: <%= format_date(@invoice.created_at) %></p>
   <p>Total Revenue: <%= format_currency(@invoice.total_revenue) %></p>
+  <p>Discounted Revenue: <%= format_currency(@invoice.total_discounted_revenue(@merchant)) %></p>
 </div>
 
 <div id="customer-info">
@@ -19,6 +20,10 @@
     <p>Quantity: <%= format_item_info(invoice_item.item.quantity_sold(@invoice)) %></p>
     <p>Unit Price: <%= format_currency(format_item_info(invoice_item.item.find_sold_price(@invoice))) %></p>
     <p>Status: <%= format_item_info(invoice_item.item.invoice_item_status(@invoice)) %></p>
+    <p>Discount Applied: 
+    <% if invoice_item.discount_applied %>
+      <%= link_to invoice_item.discount_applied, merchant_bulk_discount_path(@merchant, invoice_item.discount_applied_object) %></p>
+    <% end %>
 
     <div id="selector">
       <p>Update Invoice Item Status</p>

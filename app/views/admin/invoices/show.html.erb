@@ -8,6 +8,7 @@
                     <% end %>
   <p>Invoice Created At: <%= format_date(@invoice.created_at) %></p>
   <p>Total Revenue: <%= format_currency(@invoice.total_revenue) %></p>
+  <p>Total Discounted Revenue: <%= format_currency(@invoice.admin_discounted_revenue) %></p>
   <p>Customer Name: <%= "#{@invoice.customer_name}" %></p>
   <p>Items: <% @invoice.items.each do |i| %></p>
             <ul id = "item_<%=i.id%>">

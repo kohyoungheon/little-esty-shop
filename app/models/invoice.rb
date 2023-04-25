@@ -28,4 +28,33 @@ class Invoice < ApplicationRecord
   def total_revenue
     invoice_items.sum('unit_price * quantity')
   end
+
+  def total_discounted_revenue(merchant)
+    invoice_items
+    .joins(item: { merchant: :bulk_discounts })
+    .where("bulk_discounts.merchant_id = ? AND invoice_items.invoice_id = ?", merchant.id, self.id)
+    .group("bulk_discounts.id")
+    .select("SUM(CASE WHEN invoice_items.quantity >= bulk_discounts.quantity_threshold 
+                      THEN invoice_items.quantity * invoice_items.unit_price * (1 - (bulk_discounts.percentage_discount/100)) 
+                      ELSE invoice_items.quantity * invoice_items.unit_price 
+                      END) AS discounted_revenue")
+    .order("discounted_revenue DESC")
+    .first
+    .discounted_revenue
+  end
+
+  def admin_discounted_revenue
+    invoice_items
+    .joins(item: { merchant: :bulk_discounts })
+    .where("invoice_items.invoice_id = ?",self.id)
+    .group("bulk_discounts.id")
+    .select("SUM(CASE WHEN invoice_items.quantity >= bulk_discounts.quantity_threshold 
+                      THEN invoice_items.quantity * invoice_items.unit_price * (1 - (bulk_discounts.percentage_discount/100)) 
+                      ELSE invoice_items.quantity * invoice_items.unit_price 
+                      END) AS discounted_revenue")
+    .order("discounted_revenue DESC")
+    .first
+    .discounted_revenue
+  end
+  
 end
