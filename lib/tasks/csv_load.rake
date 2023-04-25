@@ -12,18 +12,6 @@ namespace :csv_load do
     ActiveRecord::Base.connection.reset_pk_sequence!(:customers)
   end
 
-  desc "imports bulk discount from CSV and creates Bulk_Discount objects"
-  task bulk_discounts: :environment do
-    Bulk_Discount.destroy_all
-    file = "db/data/bulk_discount.csv"
-    CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-      details = row.to_hash
-      details[:result] = convert_transaction_result(details[:result])
-      Bulk_Discount.create!(details)
-    end
-    ActiveRecord::Base.connection.reset_pk_sequence!(:bulk_discount)
-  end
-
   desc "imports merchant data from CSV and creates Merchant objects"
   task merchants: :environment do
     Merchant.destroy_all
@@ -33,6 +21,20 @@ namespace :csv_load do
       Merchant.create!(details)
     end
     ActiveRecord::Base.connection.reset_pk_sequence!(:merchants)
+  end
+
+  desc "imports bulk discount from CSV and creates BulkDiscount objects"
+  task bulk_discounts: :environment do
+    BulkDiscount.destroy_all
+    file = "db/data/bulk_discount.csv"
+    CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+      details = row.to_hash
+      details[:quantity_threshold] = details[:quantity_threshold].to_i
+      details[:percentage_discount] = details[:percentage_discount].to_f
+      details[:merchant_id] = details[:merchant_id].to_i
+      BulkDiscount.create!(details)
+    end
+    ActiveRecord::Base.connection.reset_pk_sequence!(:bulk_discount)
   end
 
   desc "imports item data from CSV and creates Item objects"

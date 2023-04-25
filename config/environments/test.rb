@@ -43,5 +43,5 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
-  config.unsplash_api_key = ENV.fetch('UNSPLASH_API_KEY')
+  # config.unsplash_api_key = ENV.fetch('UNSPLASH_API_KEY')
 end
