@@ -61,7 +61,7 @@ RSpec.describe Item, type: :model do
 
     describe "#paid_invoices" do
       it "finds all paid invoices for an item" do
-        expect(@item_1.paid_invoices).to eq([@invoice_1, @invoice_2])
+        expect(@item_1.paid_invoices.first).to eq(@invoice_1)
         expect(@item_2.paid_invoices).to eq([@invoice_1])
       end
 

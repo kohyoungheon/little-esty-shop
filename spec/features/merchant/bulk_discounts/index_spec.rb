@@ -76,4 +76,15 @@ RSpec.describe 'Merchant Bulk Discounts Index Page', type: :feature do
       expect(page).to_not have_content("20% off 20 Items")
     end
   end
+
+  describe "9: Holidays API" do
+    it "displays the next 3 upcoming US holidays" do
+      visit merchant_bulk_discounts_path(@merchant_1)
+      expect(page).to have_content("Upcoming Holidays")
+      expect(page).to have_content("Memorial Day 2023-05-29")
+      expect(page).to have_content("Juneteenth 2023-06-19")
+      expect(page).to have_content("Independence Day 2023-07-04")
+
+    end
+  end
 end

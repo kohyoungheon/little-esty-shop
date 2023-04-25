@@ -1,7 +1,8 @@
 <h1><%= @merchant.name %>'s Bulk Discounts</h1>
+<div class="flex-parent">
 
+<div class="flex-child">
 <%= link_to "Create a New Discount", new_merchant_bulk_discount_path(@merchant) %>
-
 <% @bulk_discounts.each do |d| %>
 <ul id ="<%=d.id%>_discount">
   <li>ID: <%= d.id %> <%= link_to "(View Discount #{d.id})", merchant_bulk_discount_path(@merchant,d) %></li>
@@ -12,3 +13,14 @@
   <br>
 </ul>
 <% end %>
+</div>
+
+
+<div class="flex-child">
+<p>Upcoming Holidays: <% @holidays.each do |holiday| %></p>
+                      <%= holiday[:name] %>  <%=  holiday[:date] %>
+                      <% end %>
+</div>
+
+
+</div>

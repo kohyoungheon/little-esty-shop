@@ -127,6 +127,8 @@ RSpec.describe 'Admin Index (Dashboard) Page', type: :feature do
       @invoice_item_4 = create(:invoice_item, status: "Shipped", item: item_4, invoice: @invoice_2)
       @invoice_item_5 = create(:invoice_item, status: "Shipped", item: item_5, invoice: @invoice_3)
       @invoice_item_6 = create(:invoice_item, status: "Shipped", item: item_6, invoice: @invoice_3)
+
+      @bulk_discount_2 = merchant.bulk_discounts.create!(name: "10% off 10 Items", quantity_threshold: 10, percentage_discount: 10.0)
     end
 
     it 'has a section for Incomplete Invoices that displays linked ids' do

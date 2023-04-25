@@ -67,6 +67,8 @@ RSpec.configure do |config|
     .to_return(status: 200, body: SEARCH_NOT_FOUND_RESPONSE.to_json)
 
     stub_request(:get, "https://api.unsplash.com/photos/Hl_o1K6OPsA/?client_id=#{api_key}").to_return(status: 200, body: ERROR_PHOTO_RESPONSE.to_json)
+
+     stub_request(:get, "https://date.nager.at/api/v3/NextPublicHolidays/US").to_return(status: 200, body: HOLIDAY_RESPONSE.to_json)
   end
 
   config.include FactoryBot::Syntax::Methods
