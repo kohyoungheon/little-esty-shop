@@ -95,7 +95,7 @@ namespace :csv_load do
     Rake::Task["csv_load:invoices"].execute
     Rake::Task["csv_load:invoice_items"].execute
     Rake::Task["csv_load:transactions"].execute
-    # Rake::Task["csv_load:bulk_discounts"].execute
+    Rake::Task["csv_load:bulk_discounts"].execute
   end
 end
 
