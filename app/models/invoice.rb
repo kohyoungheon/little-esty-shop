@@ -52,7 +52,7 @@ class Invoice < ApplicationRecord
                       THEN invoice_items.quantity * invoice_items.unit_price * (1 - (bulk_discounts.percentage_discount/100)) 
                       ELSE invoice_items.quantity * invoice_items.unit_price 
                       END) AS discounted_revenue")
-    .order("discounted_revenue DESC")
+    .order("discounted_revenue ASC")
     .first
     .discounted_revenue
   end
