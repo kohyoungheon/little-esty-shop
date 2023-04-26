@@ -34,7 +34,7 @@ namespace :csv_load do
       details[:merchant_id] = details[:merchant_id].to_i
       BulkDiscount.create!(details)
     end
-    ActiveRecord::Base.connection.reset_pk_sequence!(:bulk_discount)
+    ActiveRecord::Base.connection.reset_pk_sequence!(:bulk_discounts)
   end
 
   desc "imports item data from CSV and creates Item objects"
