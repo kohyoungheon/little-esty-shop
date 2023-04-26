@@ -35,10 +35,10 @@ class Invoice < ApplicationRecord
     .where("bulk_discounts.merchant_id = ? AND invoice_items.invoice_id = ?", merchant.id, self.id)
     .group("bulk_discounts.id")
     .select("SUM(CASE WHEN invoice_items.quantity >= bulk_discounts.quantity_threshold 
-                      THEN invoice_items.quantity * invoice_items.unit_price * (1 - (bulk_discounts.percentage_discount/100)) 
-                      ELSE invoice_items.quantity * invoice_items.unit_price 
+                        THEN invoice_items.quantity * invoice_items.unit_price * (1 - (bulk_discounts.percentage_discount/100)) 
+                        ELSE invoice_items.quantity * invoice_items.unit_price 
                       END) AS discounted_revenue")
-    .order("discounted_revenue DESC")
+    .order("discounted_revenue ASC")
     .first
     .discounted_revenue
   end
