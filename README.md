@@ -11,7 +11,7 @@ This project was built as part of the Turing School of Software and Design's Bac
 - Utilize advanced active record techniques to perform complex database queries
 - Practice consuming a public API while utilizing POROs and service objects to apply OOP principles to organize code
 
-More information about the project requirements can be found [here](https://link-url-here.org](https://sheltered-refuge-32440.herokuapp.com/)
+More information about the project requirements can be found [here](https://sheltered-refuge-32440.herokuapp.com)
 
 ## Built With
 
